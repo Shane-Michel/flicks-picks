@@ -1,21 +1,42 @@
-import { useState } from 'react'
-import './ReviewItem.css'
-import { RxAvatar } from 'react-icons/rx'
+import { useState } from 'react';
+import './ReviewItem.css';
+import { RxAvatar } from 'react-icons/rx';
 
-
-function ReviewItem({review}) {
-
-    const [showCompleteReview, setShowCompleteReview] = useState(false);
+function ReviewItem({ review }) {
+  const [showCompleteReview, setShowCompleteReview] = useState(false);
+  const content = review?.content || '';
+  const previewLength = 320;
+  const isLong = content.length > previewLength;
 
   return (
-    <div className='review'>
-        <div className="avatar-container">
-            {review && review.author_details.avatar_path !== null ? <img src={`${import.meta.env.VITE_API_BASE_IMAGE_URL}${review.author_details.avatar_path}`} alt="avatar" className='avatar' /> : <RxAvatar className='avatar'/>}
-            <p>{review.author}</p>
-        </div>
-        {showCompleteReview ? <p className='content'>{review?.content}<span className='read-less' onClick={()=>setShowCompleteReview(false)}>Read Less</span></p> : <p className='content'>{review?.content.slice(0,300)}...<span className='read-less' onClick={()=>setShowCompleteReview(true)}>Read More</span></p>}
-    </div>
-  )
+    <article className='review-card'>
+      <div className='review-card__avatar'>
+        {review && review.author_details.avatar_path ? (
+          <img
+            src={`${import.meta.env.VITE_API_BASE_IMAGE_URL}${review.author_details.avatar_path}`}
+            alt='avatar'
+          />
+        ) : (
+          <RxAvatar />
+        )}
+        <p>{review?.author}</p>
+      </div>
+      <div className='review-card__content'>
+        <p>
+          {showCompleteReview || !isLong ? content : `${content.slice(0, previewLength)}…`}
+        </p>
+        {isLong && (
+          <button
+            className='review-card__toggle'
+            type='button'
+            onClick={() => setShowCompleteReview((prev) => !prev)}
+          >
+            {showCompleteReview ? 'Read less' : 'Read more'}
+          </button>
+        )}
+      </div>
+    </article>
+  );
 }
 
-export default ReviewItem
+export default ReviewItem;
